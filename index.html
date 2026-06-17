@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rizzler</title>
+  <meta name="description" content="rizzler — systems, inference, open source.">
+  <meta name="author" content="rizzler">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="content-card">
+    <header>
+      <div class="header-brand">
+        <h1 class="site-title">rizzler</h1>
+        <div class="lorenz-container">
+          <canvas id="lorenzCanvas"></canvas>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html" class="nav-link active">home</a>
+        <a href="blogs.html" class="nav-link">blog</a>
+        <a href="projects.html" class="nav-link">projects</a>
+        <a href="https://x.com/realrizzler13" class="nav-link" target="_blank">X</a>
+        <a href="https://github.com/rizzler13" class="nav-link" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/chinmayi-kr" class="nav-link" target="_blank">LinkedIn</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v6m0 6v6m8.66-7H15m-6 0H3m15.66 7.66l-4.24-4.24m-4.24 0L5.34 4.34m13.32 15.32l-4.24-4.24m-4.24 0L5.34 19.66" />
+          </svg>
+          <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <div class="intro-copy">
+        <h2 class="greeting">hi, i'm rizzler.</h2>
+      </div>
+
+      <aside class="ascii-panel ascii-panel-primary" aria-labelledby="asciiPrimaryLabel">
+        <span id="asciiPrimaryLabel" class="sr-only">rotating study i</span>
+        <pre class="ascii-art" id="asciiPrimary" aria-hidden="true"></pre>
+      </aside>
+      </section>
+
+      <section class="notes-grid">
+        <div class="bio">
+          <p>i study CS engineering at <i>Dr. Ambedkar Institute of Technology, Bangalore</i> and data science at
+            IIT Madras. i'm building toward AI/ML
+            infrastructure, LLMOps, and CNCF open-source.</p>
+
+          <p>i was a student researcher at <i><a href="https://naxxatra.com" target="_blank">Naxxatra Sciences</a></i>,
+            where i designed AI/ML curriculum and built Python exercises for neural network topology from
+            scratch. before that, i was a national finalist at the <i>ISRO Hackathon 2024</i>, building a 3D
+            visualization engine for Chandrayaan-2 lunar surface data.</p>
+
+          <p>recently, i've been working on <i><a href="https://d22a5eltm3ki72.cloudfront.net"
+                target="_blank">Saraswati</a></i> — a real-time AI paper radar built with Go, Python, vLLM, AWS and Docker —
+            and porting <i><a href="https://github.com/Chinmayi-KR/diffusion-mlx" target="_blank">LLaDA to Apple
+                Silicon</a></i> via MLX.</p>
+
+          <p>i like understanding systems deeply enough to rebuild them from first principles.</p>
+
+
+
+
+        </div>
+
+        <aside class="side-notes">
+          <div class="ascii-panel ascii-panel-secondary" aria-labelledby="asciiSecondaryLabel">
+            <span id="asciiSecondaryLabel" class="sr-only">rotating study ii</span>
+            <pre class="ascii-art ascii-art-compact" id="asciiSecondary" aria-hidden="true"></pre>
+          </div>
+        </aside>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    class LorenzAttractor {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.setupCanvas();
+
+        this.sigma = 10.0;
+        this.rho = 28.0;
+        this.beta = 8.0 / 3.0;
+        this.dt = 0.01;
+
+        this.maxTrailLength = 300;
+        this.fadeSpeed = 0.02;
+
+        this.attractors = [
+          { x: 1, y: 1, z: 1, trail: [], color: '' },
+          { x: 2, y: 1, z: 1, trail: [], color: '' },
+          { x: 1, y: 2, z: 1, trail: [], color: '' },
+          { x: 1, y: 1, z: 2, trail: [], color: '' },
+          { x: -1, y: -1, z: 1, trail: [], color: '' },
+          { x: 0.5, y: -0.5, z: 1.5, trail: [], color: '' }
+        ];
+
+        this.syncColors();
+        this.prePopulateTrails();
+        this.animate();
+      }
+
+      setupCanvas() {
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+
+        const fixedWidth = 200;
+        const fixedHeight = 150;
+        const pixelRatio = window.devicePixelRatio || 1;
+        this.canvas.width = fixedWidth * pixelRatio * 2;
+        this.canvas.height = fixedHeight * pixelRatio * 2;
+        this.ctx.scale(pixelRatio * 2, pixelRatio * 2);
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.width = fixedWidth;
+        this.height = fixedHeight;
+        this.centerX = this.width / 2;
+        this.centerY = this.height / 2;
+        this.scale = 1.4;
+      }
+
+      syncColors() {
+        const styles = getComputedStyle(document.body);
+        const palette = [
+          styles.getPropertyValue('--canvas-1').trim(),
+          styles.getPropertyValue('--canvas-2').trim(),
+          styles.getPropertyValue('--canvas-3').trim(),
+          styles.getPropertyValue('--canvas-4').trim(),
+          styles.getPropertyValue('--canvas-5').trim(),
+          styles.getPropertyValue('--canvas-6').trim()
+        ];
+        this.attractors.forEach((a, i) => {
+          a.color = palette[i] || styles.getPropertyValue('--text-primary').trim();
+        });
+      }
+
+      prePopulateTrails() {
+        for (let step = 0; step < 100; step++) {
+          this.attractors.forEach(a => {
+            const [dx, dy, dz] = this.lorenzEquations(a.x, a.y, a.z);
+            a.x += dx; a.y += dy; a.z += dz;
+            const [sx, sy] = this.projectTo2D(a.x, a.y, a.z);
+            a.trail.push([sx, sy]);
+          });
+        }
+      }
+
+      lorenzEquations(x, y, z) {
+        return [
+          this.sigma * (y - x) * this.dt,
+          (x * (this.rho - z) - y) * this.dt,
+          (x * y - this.beta * z) * this.dt
+        ];
+      }
+
+      projectTo2D(x, y, z) {
+        return [
+          this.centerX + x * this.scale * 1.5,
+          this.centerY - (z - 25) * this.scale
+        ];
+      }
+
+      update() {
+        this.syncColors();
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.attractors.forEach(a => {
+          const [dx, dy, dz] = this.lorenzEquations(a.x, a.y, a.z);
+          a.x += dx; a.y += dy; a.z += dz;
+          const [sx, sy] = this.projectTo2D(a.x, a.y, a.z);
+          a.trail.push([sx, sy]);
+          if (a.trail.length > this.maxTrailLength) a.trail.shift();
+          this.drawTrail(a);
+        });
+      }
+
+      drawTrail(a) {
+        if (a.trail.length < 2) return;
+        this.ctx.globalCompositeOperation = 'lighter';
+        this.ctx.strokeStyle = a.color;
+        this.ctx.lineWidth = 1.2;
+        this.ctx.globalAlpha = 0.45;
+        this.ctx.beginPath();
+        this.ctx.moveTo(a.trail[0][0], a.trail[0][1]);
+        for (let i = 2; i < a.trail.length; i += 2) {
+          this.ctx.lineTo(a.trail[i][0], a.trail[i][1]);
+        }
+        if (a.trail.length > 1) {
+          this.ctx.lineTo(a.trail[a.trail.length - 1][0], a.trail[a.trail.length - 1][1]);
+        }
+        this.ctx.stroke();
+        this.ctx.globalAlpha = 1;
+        this.ctx.globalCompositeOperation = 'source-over';
+      }
+
+      animate() {
+        this.update();
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    let lorenzInitialized = false;
+    function initLorenz() {
+      if (lorenzInitialized) return;
+      const canvas = document.getElementById('lorenzCanvas');
+      if (!canvas) return;
+      const container = canvas.parentElement;
+      if (!container) return;
+      const check = () => {
+        const rect = container.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          lorenzInitialized = true;
+          new LorenzAttractor(canvas);
+        } else {
+          setTimeout(check, 50);
+        }
+      };
+      setTimeout(check, 100);
+    }
+    document.addEventListener('DOMContentLoaded', initLorenz);
+    window.addEventListener('load', initLorenz);
+  </script>
+
+  <script>
+    class AsciiRotor {
+      constructor(element, options) {
+        this.element = element;
+        this.width = options.width;
+        this.height = options.height;
+        this.scale = options.scale;
+        this.distance = options.distance;
+        this.speed = options.speed;
+        this.palette = options.palette;
+        this.points = options.points;
+        this.rotation = options.rotation || { x: 0.8, y: 0.4, z: 0.25 };
+        this.frame = 0;
+        this.lastFrameTime = 0;
+      }
+
+      rotatePoint(point, ax, ay, az) {
+        let { x, y, z } = point;
+        const sx = Math.sin(ax), cx = Math.cos(ax);
+        let y1 = y * cx - z * sx, z1 = y * sx + z * cx;
+        const sy = Math.sin(ay), cy = Math.cos(ay);
+        let x2 = x * cy + z1 * sy, z2 = -x * sy + z1 * cy;
+        const sz = Math.sin(az), cz = Math.cos(az);
+        return { x: x2 * cz - y1 * sz, y: x2 * sz + y1 * cz, z: z2 };
+      }
+
+      render(ts) {
+        if (ts - this.lastFrameTime < 72) {
+          requestAnimationFrame(t => this.render(t));
+          return;
+        }
+        this.lastFrameTime = ts;
+        this.frame += 1;
+
+        const chars = Array.from({ length: this.width * this.height }, () => ' ');
+        const depth = new Float32Array(this.width * this.height).fill(-Infinity);
+        const ax = this.frame * this.speed * this.rotation.x;
+        const ay = this.frame * this.speed * this.rotation.y;
+        const az = this.frame * this.speed * this.rotation.z;
+
+        for (const point of this.points) {
+          const r = this.rotatePoint(point, ax, ay, az);
+          const p = this.distance / (this.distance - r.z);
+          const px = Math.round(this.width / 2 + r.x * this.scale * p);
+          const py = Math.round(this.height / 2 + r.y * this.scale * p * 0.58);
+          if (px < 0 || px >= this.width || py < 0 || py >= this.height) continue;
+          const idx = py * this.width + px;
+          if (r.z <= depth[idx]) continue;
+          const lum = Math.max(0, Math.min(1, 0.16 + 0.44 * (r.z / this.distance + 0.5) + 0.4 * (point.weight || 0.5)));
+          depth[idx] = r.z;
+          chars[idx] = this.palette[Math.min(this.palette.length - 1, Math.floor(lum * (this.palette.length - 1)))];
+        }
+
+        const lines = [];
+        for (let row = 0; row < this.height; row++) {
+          lines.push(chars.slice(row * this.width, (row + 1) * this.width).join(''));
+        }
+        this.element.textContent = lines.join('\n');
+        requestAnimationFrame(t => this.render(t));
+      }
+
+      start() { requestAnimationFrame(t => this.render(t)); }
+    }
+
+    function buildTorusKnotPoints(total) {
+      const pts = [];
+      for (let i = 0; i < total; i++) {
+        const t = (i / total) * Math.PI * 4;
+        pts.push({
+          x: (1.65 + 0.55 * Math.cos(3 * t)) * Math.cos(2 * t),
+          y: (1.65 + 0.55 * Math.cos(3 * t)) * Math.sin(2 * t),
+          z: 0.95 * Math.sin(3 * t),
+          weight: (Math.sin(t * 3) + 1) / 2
+        });
+      }
+      return pts;
+    }
+
+    function buildLemniscatePoints(total) {
+      const pts = [];
+      for (let i = 0; i < total; i++) {
+        const t = (i / total) * Math.PI * 2;
+        const d = 1 + Math.sin(t) ** 2;
+        pts.push({
+          x: (Math.cos(t) / d) * 2.1,
+          y: (Math.sin(t) * Math.cos(t) / d) * 2.6,
+          z: Math.sin(2 * t) * 1.2,
+          weight: (Math.cos(2 * t) + 1) / 2
+        });
+      }
+      return pts;
+    }
+
+    function initAsciiArt() {
+      const primary = document.getElementById('asciiPrimary');
+      const secondary = document.getElementById('asciiSecondary');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (primary) primary.textContent = [
+          '           .:-=++=-:.           ',
+          '       .-+#@@@@@@@@@@#+-.       ',
+          '     .-*@@@#*=-..-=*#@@@*-.     ',
+          '    :+@@@*=.          .=*@@+:    ',
+          '    =@@#:    recursive     :#@=   ',
+          '    =@@#:     geometry     :#@=   ',
+          '    :+@@@*=.          .=*@@+:    ',
+          '     .-*@@@#*=-..-=*#@@@*-.     ',
+          '       .-+#@@@@@@@@@@#+-.       ',
+          '           .:-=++=-:.           '
+        ].join('\n');
+        if (secondary) secondary.textContent = [
+          '         .--==--.         ',
+          '      .-+#@@@@@@#+-.      ',
+          '    .-*@@*=....=*@@*-.    ',
+          '    =@@*:  loop  :*@@=    ',
+          '    =@@*:  self  :*@@=    ',
+          '    .-*@@*=....=*@@*-.    ',
+          '      .-+#@@@@@@#+-.      ',
+          '         .--==--.         '
+        ].join('\n');
+        return;
+      }
+      if (primary) new AsciiRotor(primary, {
+        width: 32, height: 18, scale: 7.2, distance: 8, speed: 0.05,
+        palette: ' .,:-=+*#%@', points: buildTorusKnotPoints(900),
+        rotation: { x: 0.9, y: 0.55, z: 0.22 }
+      }).start();
+      if (secondary) new AsciiRotor(secondary, {
+        width: 28, height: 12, scale: 5.9, distance: 7, speed: 0.042,
+        palette: ' .-:=+*#%@', points: buildLemniscatePoints(720),
+        rotation: { x: 0.65, y: 0.92, z: 0.18 }
+      }).start();
+    }
+    document.addEventListener('DOMContentLoaded', initAsciiArt);
+  </script>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('themeToggle');
+      const body = document.body;
+      if ((localStorage.getItem('theme') || 'dark') === 'dark') body.classList.add('dark-mode');
+      toggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+      });
+    })();
+  </script>
+</body>
+
+</html>

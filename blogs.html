@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>blog - rizzler</title>
+  <meta name="description" content="Writing by rizzler — systems, inference, open source.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1 class="site-title">rizzler</h1>
+      <nav>
+        <a href="index.html" class="nav-link">home</a>
+        <a href="blogs.html" class="nav-link active">blog</a>
+        <a href="projects.html" class="nav-link">projects</a>
+        <a href="https://x.com/realrizzler13" class="nav-link" target="_blank">X</a>
+        <a href="https://github.com/rizzler13" class="nav-link" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/chinmayi-kr" class="nav-link" target="_blank">LinkedIn</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5" />
+            <path
+              d="M12 1v6m0 6v6m8.66-7H15m-6 0H3m15.66 7.66l-4.24-4.24m-4.24 0L5.34 4.34m13.32 15.32l-4.24-4.24m-4.24 0L5.34 19.66" />
+          </svg>
+          <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="writing-section" style="padding-top: 28px;">
+        <h2 class="section-heading">writing</h2>
+        <div class="blog-list">
+          <article class="blog-item">
+            <h3 class="blog-title"><a href="https://diffusiononmlx.netlify.app/" target="_blank">The Diffusion Revolt,
+                LLaDA and Masked Diffusion Language Models</a></h3>
+            <p class="blog-date">june 2026</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('themeToggle');
+      const body = document.body;
+      if ((localStorage.getItem('theme') || 'dark') === 'dark') body.classList.add('dark-mode');
+      toggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+      });
+    })();
+  </script>
+</body>
+
+</html>
