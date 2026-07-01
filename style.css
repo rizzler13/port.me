@@ -115,10 +115,11 @@ header {
 
 .site-title {
   font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 38px;
+  font-size: clamp(38px, 5.5vw, 54px);
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
+  line-height: 1.1;
 }
 
 .lorenz-container {
@@ -216,10 +217,10 @@ main {
 
 .greeting {
   font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: clamp(46px, 5vw, 64px);
+  font-size: clamp(28px, 3.8vw, 36px);
   font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
   color: var(--text-primary);
   margin-bottom: 20px;
 }
@@ -370,9 +371,9 @@ main {
 }
 
 @media screen and (max-width: 768px) {
-  .site-title { font-size: 32px; }
+  .site-title { font-size: 36px; }
   .lorenz-container { width: 92px; height: 56px; }
-  .greeting { font-size: 42px; }
+  .greeting { font-size: 28px; }
   .nav-link { font-size: 13px; }
   .ascii-art { font-size: 10px; }
 }
@@ -387,9 +388,9 @@ main {
 
   header { gap: 14px; padding-bottom: 16px; }
   .header-brand { gap: 10px; }
-  .site-title { font-size: 26px; }
+  .site-title { font-size: 28px; }
   .lorenz-container { width: 76px; height: 46px; }
-  .greeting { font-size: 34px; }
+  .greeting { font-size: 22px; }
 
   .lede, .bio p { font-size: 15px; }
   .ascii-art { min-height: 15em; font-size: 9px; }
